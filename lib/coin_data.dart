@@ -36,10 +36,11 @@ const String bitCoinAverageUrl =
     'https://apiv2.bitcoinaverage.com/indices/global/ticker';
 
 class CoinData {
-  Future<dynamic> getLastCoinPrice() async {
-    http.Response response = await http.get('$bitCoinAverageUrl/BTCUSD');
+  Future<dynamic> getLastCoinPrice(String currency) async {
+    http.Response response = await http.get('$bitCoinAverageUrl/BTC$currency');
 
     if (response.statusCode == 200) {
+      print(response.body);
       return jsonDecode(response.body)['last'];
     } else {
       throw '${response.statusCode}-Something went wrong with the request.';

@@ -15,7 +15,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
   void fetchCoinData() async {
     try {
-      double latestPrice = await CoinData().getLastCoinPrice();
+      double latestPrice = await CoinData().getLastCoinPrice(selectedCurrency);
       setState(() {
         lastBtcPrice = latestPrice.toString();
       });
@@ -51,7 +51,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = $lastBtcPrice USD',
+                  '1 BTC = $lastBtcPrice $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -88,6 +88,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = value;
         });
+        fetchCoinData();
       },
     );
   }
@@ -101,6 +102,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = currenciesList[pos];
         });
+        fetchCoinData();
       },
     );
   }
