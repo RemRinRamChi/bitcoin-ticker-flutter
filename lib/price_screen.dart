@@ -1,4 +1,7 @@
+import 'dart:io' show Platform;
+
 import 'package:bitcoin_ticker/coin_data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PriceScreen extends StatefulWidget {
@@ -8,6 +11,36 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = currenciesList[0];
+
+  DropdownButton<String> getCurrencyDropdownButton() {
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: currenciesList
+          .map((currency) => DropdownMenuItem(
+                child: Text(currency),
+                value: currency,
+              ))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value;
+        });
+      },
+    );
+  }
+
+  CupertinoPicker getCurrencyPicker() {
+    return CupertinoPicker(
+      backgroundColor: Colors.lightBlue,
+      itemExtent: 32.0,
+      children: currenciesList.map((item) => Text(item)).toList(),
+      onSelectedItemChanged: (pos) {
+        setState(() {
+          selectedCurrency = currenciesList[pos];
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +78,9 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-              value: selectedCurrency,
-              items: currenciesList
-                  .map((currency) => DropdownMenuItem(
-                        child: Text(currency),
-                        value: currency,
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCurrency = value;
-                });
-              },
-            ),
+            child: Platform.isIOS
+                ? getCurrencyPicker()
+                : getCurrencyDropdownButton(),
           ),
         ],
       ),
