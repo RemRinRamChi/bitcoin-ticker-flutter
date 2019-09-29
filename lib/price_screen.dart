@@ -11,13 +11,21 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = currenciesList[0];
-  String lastBtcPrice = '?';
+  Map<String, String> lastPriceMap =
+      Map.fromIterable(cryptoList, key: (v) => v, value: (v) => '?');
 
-  void fetchCoinData() async {
+  void fetchAllCoinData() {
+    for (String coin in cryptoList) {
+      fetchCoinData(coin);
+    }
+  }
+
+  void fetchCoinData(String coin) async {
     try {
-      double latestPrice = await CoinData().getLastCoinPrice(selectedCurrency);
+      double latestPrice =
+          await CoinData().getLastCoinPrice(coin, selectedCurrency);
       setState(() {
-        lastBtcPrice = latestPrice.toString();
+        lastPriceMap[coin] = latestPrice.toString();
       });
     } on Exception catch (e) {
       print(e.toString());
@@ -27,7 +35,7 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   void initState() {
     super.initState();
-    fetchCoinData();
+    fetchAllCoinData();
   }
 
   @override
@@ -48,16 +56,21 @@ class _PriceScreenState extends State<PriceScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = $lastBtcPrice $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
+              child: Column(
+                children: cryptoList
+                    .map((coin) => Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 28.0),
+                          child: Text(
+                            '1 $coin = ${lastPriceMap[coin]} $selectedCurrency',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
           ),
@@ -88,7 +101,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = value;
         });
-        fetchCoinData();
+        fetchAllCoinData();
       },
     );
   }
@@ -102,7 +115,7 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectedCurrency = currenciesList[pos];
         });
-        fetchCoinData();
+        fetchAllCoinData();
       },
     );
   }
